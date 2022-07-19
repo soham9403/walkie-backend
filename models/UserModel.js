@@ -5,6 +5,7 @@ import modelFiledDefinations from '../helper/modelFiledDefinations.js'
 
 const Schema = mongoose.Schema
 
+
 const UserSchema = new Schema(
   {
     name: modelFiledDefinations.stringAndRequired,
