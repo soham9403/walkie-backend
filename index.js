@@ -10,6 +10,7 @@ import cors from 'cors'
 import indexroute from './routes/index.js'
 import RoomsModal from './models/RoomsModal.js'
 import UserModel from './models/UserModel.js'
+import { ErrorResponse } from './helper/apiResponse.js'
 
 dotenv.config()
 const app = express()
@@ -31,7 +32,7 @@ mongoose
   })
 
 export const port = process.env.PORT || '8000'
-
+try{
 app.use(express.static('public'))
 app.use(cors())
 app.use(express.json())
@@ -43,6 +44,8 @@ app.use('/api/', indexroute)
 httpServer.listen(port, () => {
   console.log('APP is running on port ' + port)
 })
+
+
 
 const io = new Server(httpServer, { cors: '*' })
 
@@ -111,10 +114,12 @@ io.on('connection', socket => {
           users_socket_instance.user &&
           users.includes(users_socket_instance.user.usercode)
         ) {
-          users_socket_instance.join(room._id)
+          
+          users_socket_instance.join(room._id.toString())
         }
       })
-      socket.broadcast.to(room._id).emit('room_created', room)
+      
+      socket.broadcast.to(room._id.toString()).emit('room_created', room)
       callback({
         status: 1,
         message: 'Room created'
@@ -227,3 +232,6 @@ io.engine.on('connection_error', err => {
   console.log(err.message) // the error message, for example "Session ID unknown"
   console.log(err.context) // some additional error context
 })
+}catch(e){
+   app.response.send(e.message)
+}
