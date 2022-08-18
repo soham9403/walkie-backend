@@ -59,18 +59,22 @@ try {
         const { name, users, creator } = JSON.parse(data)
 
         if (name == '') {
+          if (callback && typeof callback === 'function') {
           callback({
             status: 0,
             message: 'Rooom name is required'
           })
+        }
 
           return
         }
         if (users.length < 0) {
-          callback({
-            status: 0,
-            message: 'Add users to room'
-          })
+          if (callback && typeof callback === 'function') {
+            callback({
+              status: 0,
+              message: 'Add users to room'
+            })
+          }
 
           return
         }
@@ -78,11 +82,12 @@ try {
           !creator ||
           (creator && (creator.usercode == '' || creator.id == ''))
         ) {
-          callback({
-            status: 0,
-            message: 'No creator found'
-          })
-
+          if (callback && typeof callback === 'function') {
+            callback({
+              status: 0,
+              message: 'No creator found'
+            })
+          }
           return
         }
         users.push(creator.usercode)
@@ -117,15 +122,19 @@ try {
         })
 
         socket.broadcast.to(room._id.toString()).emit('room_created', room)
-        callback({
-          status: 1,
-          message: 'Room created'
-        })
+        if (callback && typeof callback === 'function') {
+          callback({
+            status: 1,
+            message: 'Room created'
+          })
+        }
       } catch (e) {
-        callback({
-          status: 0,
-          message: e.message
-        })
+        if (callback && typeof callback === 'function') {
+          callback({
+            status: 0,
+            message: e.message
+          })
+        }
       }
     })
 
@@ -182,18 +191,18 @@ try {
           message
         })
         if (callback && typeof callback === 'function') {
-        callback({
-          status: 1,
-          message: ''
-        })
-      }
+          callback({
+            status: 1,
+            message: ''
+          })
+        }
       } catch (e) {
         if (callback && typeof callback === 'function') {
-        callback({
-          status: 0,
-          message: e.message
-        })
-      }
+          callback({
+            status: 0,
+            message: e.message
+          })
+        }
       }
     })
     socket.on('releasebutton', async (data, callback) => {
@@ -203,19 +212,19 @@ try {
           roomId: room,
           message
         })
-         if (callback && typeof callback === 'function') {
-        callback({
-          status: 1,
-          message: ''
-        })
-      }
+        if (callback && typeof callback === 'function') {
+          callback({
+            status: 1,
+            message: ''
+          })
+        }
       } catch (e) {
-         if (callback && typeof callback === 'function') {
-        callback({
-          status: 0,
-          message: e.message
-        })
-      }
+        if (callback && typeof callback === 'function') {
+          callback({
+            status: 0,
+            message: e.message
+          })
+        }
       }
     })
 
