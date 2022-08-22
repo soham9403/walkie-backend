@@ -48,9 +48,8 @@ try {
   const io = new Server(httpServer, { cors: '*' })
 
   io.on('connection', socket => {
-    console.log('user connected')
     socket.on('user_online', async userdata => {
-      userdata = JSON.parse(userdata)
+      userdata = userdata
       socket.user = { ...userdata }
     })
 
@@ -60,11 +59,11 @@ try {
 
         if (name == '') {
           if (callback && typeof callback === 'function') {
-          callback({
-            status: 0,
-            message: 'Rooom name is required'
-          })
-        }
+            callback({
+              status: 0,
+              message: 'Rooom name is required'
+            })
+          }
 
           return
         }
