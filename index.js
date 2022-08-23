@@ -50,7 +50,7 @@ try {
   io.on('connection', socket => {
     socket.on('user_online', async userdata => {
       userdata = userdata
-      console.log('user online  joined' + userdata)
+      console.log('user online  joined' + userdata.toString())
       socket.user = { ...userdata }
     })
 
