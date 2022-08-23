@@ -186,7 +186,7 @@ try {
 
     socket.on('pressbutton', async (data, callback) => {
       try {
-        console.log('button pressed ' + data.toString())
+        console.log('button pressed ' + JSON.stringify(data))
         let { room, message } = data
         socket.broadcast.to(room).emit('pressbutton', {
           roomId: room,
