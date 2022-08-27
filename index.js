@@ -196,8 +196,7 @@ try {
         //to just emit the same event to all members of a room
         for (const clientId in clients) {
           const clientSocket = io.sockets.connected[clientId]
-          console.log(clientId,numClients)
-         
+          console.log(clientId, numClients)
         }
 
         let { room, message } = data
@@ -212,6 +211,7 @@ try {
           })
         }
       } catch (e) {
+        console.log('gand fati', e.message)
         if (callback && typeof callback === 'function') {
           callback({
             status: 0,
