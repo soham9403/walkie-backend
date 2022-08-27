@@ -189,13 +189,13 @@ try {
       try {
         console.log('button pressed ' + JSON.stringify(data))
 
-        const clients = io.sockets.adapter.rooms[data.room].sockets
+        const clients = socket.sockets.adapter.rooms[data.room].sockets
 
         const numClients = clients ? Object.keys(clients).length : 0
 
         //to just emit the same event to all members of a room
         for (const clientId in clients) {
-          const clientSocket = io.sockets.connected[clientId]
+          const clientSocket = socket.sockets.connected[clientId]
           console.log(clientId, numClients)
         }
 
