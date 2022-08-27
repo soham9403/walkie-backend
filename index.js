@@ -148,7 +148,7 @@ try {
     socket.on('join_rooms', async (data, callback) => {
       try {
         let { rooms } = data
-        console.log('rooms joined' + JSON.stringify(data))
+
         for (let room of rooms) {
           socket.join(room)
           socket.broadcast.to(room).emit('user_chat_joined', {
@@ -188,6 +188,18 @@ try {
     socket.on('pressbutton', async (data, callback) => {
       try {
         console.log('button pressed ' + JSON.stringify(data))
+
+        const clients = io.sockets.adapter.rooms[data.room].sockets
+
+        const numClients = clients ? Object.keys(clients).length : 0
+
+        //to just emit the same event to all members of a room
+        for (const clientId in clients) {
+          const clientSocket = io.sockets.connected[clientId]
+          console.log(clientId,numClients)
+         
+        }
+
         let { room, message } = data
         socket.broadcast.to(room).emit('pressbutton', {
           roomId: room,
