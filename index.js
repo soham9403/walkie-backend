@@ -192,7 +192,7 @@ try {
         console.log(data.room, socket.adapter.rooms.get(data.room))
 
         let { room, message } = data
-
+console.log('room-log',room)
         io.to(room).emit('pressbutton', {
           roomId: room,
           message
