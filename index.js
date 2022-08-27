@@ -188,16 +188,9 @@ try {
     socket.on('pressbutton', async (data, callback) => {
       try {
         console.log('button pressed ' + JSON.stringify(data))
-
-        const clients = socket.sockets.adapter.rooms[data.room].sockets
-
-        const numClients = clients ? Object.keys(clients).length : 0
-
-        //to just emit the same event to all members of a room
-        for (const clientId in clients) {
-          const clientSocket = socket.sockets.connected[clientId]
-          console.log(clientId, numClients)
-        }
+        // console.log(, data.room, socket.rooms[data.room])
+        console.log(data.room,socket.adapter.rooms.get(data.room))
+        
 
         let { room, message } = data
         socket.broadcast.to(room).emit('pressbutton', {
