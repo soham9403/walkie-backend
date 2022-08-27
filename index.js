@@ -122,6 +122,8 @@ try {
         })
 
         socket.broadcast.to(room._id).emit('room_created', room)
+
+        
         if (callback && typeof callback === 'function') {
           callback({
             status: 1,
@@ -193,7 +195,7 @@ try {
         
 
         let { room, message } = data
-        socket.broadcast.to(room).emit('pressbutton', {
+        socket.broadcast.emit('pressbutton', {
           roomId: room,
           message
         })
