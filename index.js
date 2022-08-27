@@ -50,14 +50,14 @@ try {
   io.on('connection', socket => {
     socket.on('user_online', async userdata => {
       userdata = userdata
-      console.log('user online  joined' + userdata.toString())
+      console.log('user online  joined' + JSON.stringify(userdata))
       socket.user = { ...userdata }
     })
 
     socket.on('create_room', async (data, callback) => {
       try {
         const { name, users, creator } = JSON.parse(data)
-        console.log('room create ' + data.toString())
+        console.log('room create ' + JSON.stringify(data))
         if (name == '') {
           if (callback && typeof callback === 'function') {
             callback({
@@ -117,11 +117,11 @@ try {
             users_socket_instance.user &&
             users.includes(users_socket_instance.user.usercode)
           ) {
-            users_socket_instance.join(room._id.toString())
+            users_socket_instance.join(room._id)
           }
         })
 
-        socket.broadcast.to(room._id.toString()).emit('room_created', room)
+        socket.broadcast.to(room._id).emit('room_created', room)
         if (callback && typeof callback === 'function') {
           callback({
             status: 1,
@@ -140,6 +140,7 @@ try {
 
     socket.on('join_room', async data => {
       let { room } = data
+      console.log(JSON.stringify(data))
       socket.join(room)
       socket.broadcast.to(room).emit(socket.user.name + ' joinded the chat')
     })
@@ -147,7 +148,7 @@ try {
     socket.on('join_rooms', async (data, callback) => {
       try {
         let { rooms } = data
-        console.log('rooms joined' + data.toString())
+        console.log('rooms joined' + JSON.stringify(data))
         for (let room of rooms) {
           socket.join(room)
           socket.broadcast.to(room).emit('user_chat_joined', {
@@ -176,7 +177,7 @@ try {
 
     socket.on('message', async data => {
       let { room, message } = data
-      console.log('message ' + data.toString())
+      console.log('message ' + JSON.stringify(data))
       socket.broadcast.to(room).emit('chat', {
         roomId: room,
         message,
@@ -210,7 +211,7 @@ try {
     socket.on('releasebutton', async (data, callback) => {
       try {
         let { room, message } = data
-        console.log('button resleased ' + data.toString())
+        console.log('button resleased ' + JSON.stringify(data))
         socket.broadcast.to(room).emit('releasebutton', {
           roomId: room,
           message
@@ -233,7 +234,7 @@ try {
 
     socket.on('audio', async data => {
       let { room, audio } = data
-      console.log('audio coming ' + data.toString())
+      console.log('audio coming ' + JSON.stringify(data))
       socket.broadcast.to(room).emit('audio', {
         roomId: room,
         audio
