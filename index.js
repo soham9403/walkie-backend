@@ -148,7 +148,7 @@ try {
     socket.on('join_rooms', async (data, callback) => {
       try {
         let { rooms } = data
-        console.log("join_rooms",JSON.stringify(data))
+        console.log('join_rooms', JSON.stringify(data))
         for (let room of rooms) {
           socket.join(room)
           socket.broadcast.to(room).emit('user_chat_joined', {
@@ -188,11 +188,11 @@ try {
     socket.on('pressbutton', async (data, callback) => {
       try {
         console.log('button pressed ' + JSON.stringify(data))
-        
+
         console.log(data.room, socket.adapter.rooms.get(data.room))
 
         let { room, message } = data
-
+        console.log('abc')
         socket.to(room).emit('pressbutton', {
           roomId: room,
           message
