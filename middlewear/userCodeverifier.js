@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import userRole from '../config/constants/userRole.js'
-import { ErrorResponse, forbiddenResponse } from '../helper/apiResponse.js'
+import { errorResponse, forbiddenResponse } from '../helper/apiResponse.js'
 import UserModel from '../models/UserModel.js'
 // this function will use when there is user_code field in body or params
 export const userCodeverifier = async (req, res, next) => {

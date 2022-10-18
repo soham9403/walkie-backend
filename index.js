@@ -10,7 +10,7 @@ import cors from 'cors'
 import indexroute from './routes/index.js'
 import RoomsModal from './models/RoomsModal.js'
 import UserModel from './models/UserModel.js'
-import { ErrorResponse } from './helper/apiResponse.js'
+import { errorResponse } from './helper/apiResponse.js'
 
 dotenv.config()
 const app = express()
@@ -49,15 +49,15 @@ try {
 
   io.on('connection', socket => {
     socket.on('user_online', async userdata => {
-      userdata = userdata
-      console.log('user online  joined' + JSON.stringify(userdata))
-      socket.user = { ...userdata }
+
+
+      socket.data = JSON.parse(userdata)
     })
 
     socket.on('create_room', async (data, callback) => {
       try {
         const { name, users, creator } = JSON.parse(data)
-        console.log('room create ' + JSON.stringify(data))
+
         if (name == '') {
           if (callback && typeof callback === 'function') {
             callback({
@@ -112,14 +112,14 @@ try {
           }
         )
 
-        io.sockets.sockets.forEach(users_socket_instance => {
-          if (
-            users_socket_instance.user &&
-            users.includes(users_socket_instance.user.usercode)
-          ) {
-            users_socket_instance.join(room._id)
-          }
-        })
+        // io.sockets.sockets.forEach(users_socket_instance => {
+        //   if (
+        //     users_socket_instance.user &&
+        //     users.includes(users_socket_instance.user.usercode)
+        //   ) {
+        //     users_socket_instance.join(room._id)
+        //   }
+        // })
 
         socket.broadcast.to(room._id).emit('room_created', room)
         if (callback && typeof callback === 'function') {
@@ -140,7 +140,6 @@ try {
 
     socket.on('join_room', async data => {
       let { room } = data
-      console.log(JSON.stringify(data))
       socket.join(room)
       socket.broadcast.to(room).emit(socket.user.name + ' joinded the chat')
     })
@@ -148,7 +147,7 @@ try {
     socket.on('join_rooms', async (data, callback) => {
       try {
         let { rooms } = data
-        console.log('join_rooms', JSON.stringify(data))
+
         for (let room of rooms) {
           socket.join(room)
           socket.broadcast.to(room).emit('user_chat_joined', {
@@ -170,6 +169,8 @@ try {
             status: 0,
             message: e.message
           })
+
+
         }
         return
       }
@@ -177,7 +178,7 @@ try {
 
     socket.on('message', async data => {
       let { room, message } = data
-      console.log('message ' + JSON.stringify(data))
+
       socket.broadcast.to(room).emit('chat', {
         roomId: room,
         message,
@@ -187,12 +188,9 @@ try {
 
     socket.on('pressbutton', async (data, callback) => {
       try {
-        console.log('button pressed ' + JSON.stringify(data))
-
-        console.log(data.room, socket.adapter.rooms.get(data.room))
 
         let { room, message } = data
-        console.log('abc')
+
         socket.to(room).emit('pressbutton', {
           roomId: room,
           message
@@ -204,7 +202,7 @@ try {
           })
         }
       } catch (e) {
-        console.log('gand fati', e.message)
+
         if (callback && typeof callback === 'function') {
           callback({
             status: 0,
@@ -216,7 +214,7 @@ try {
     socket.on('releasebutton', async (data, callback) => {
       try {
         let { room, message } = data
-        console.log('button resleased ' + JSON.stringify(data))
+
         socket.broadcast.to(room).emit('releasebutton', {
           roomId: room,
           message
@@ -239,11 +237,138 @@ try {
 
     socket.on('audio', async data => {
       let { room, audio } = data
-      console.log('audio coming ' + JSON.stringify(data))
+
       socket.broadcast.to(room).emit('audio', {
         roomId: room,
         audio
       })
+    })
+
+    socket.on('addusertoroom', async (data, callback) => {
+      try {
+
+
+        const { users, room } = JSON.parse(data)
+
+
+        if (users.length < 0) {
+          if (callback && typeof callback === 'function') {
+            callback({
+              status: 0,
+              message: 'No user selected'
+            })
+          }
+
+          return
+        }
+
+
+        const fetchedusers = await UserModel.find(
+          { usercode: { $in: users } },
+          { password: 0, rooms: 0 }
+        )
+
+
+        const roomInfo = await RoomsModal.findOneAndUpdate({ _id: mongoose.Types.ObjectId(room) }, { $push: { users: fetchedusers.map((user) => { return { name: user.name, usercoder: user.usercode, _id: user._id } }) } })
+
+
+
+        await UserModel.updateMany(
+          { usercode: { $in: users } },
+          {
+            $push: {
+              rooms: { _id: mongoose.Types.ObjectId(room), name: roomInfo.name }
+            }
+          }
+        )
+
+        const sockets = await io.fetchSockets();
+
+
+        for (const innerSocket of sockets) {
+
+          const data = innerSocket.data;
+
+
+          if (users.includes(data.usercode)) {
+            innerSocket.join(room)
+            innerSocket.emit('new_room', { _id: room, name: roomInfo.name })
+
+          } else {
+
+          }
+        }
+
+        socket.to(room).emit('user_added_to_room', {
+          users: fetchedusers.map((user) => {
+            return { _id: user._id, name: user.name, usercode: user.usercode, details: user }
+          }),
+          room
+        })
+
+        callback({
+          status: 1,
+          message: 'user added successfully '
+        })
+
+      } catch (e) {
+        console.log(e)
+        if (callback && typeof callback === 'function') {
+          callback({
+            status: 0,
+            message: e.message
+          })
+        }
+      }
+    })
+
+    socket.on('removeuserfromroom', async (data, callback) => {
+      try {
+
+
+        const { user, room } = JSON.parse(data)
+console.log(user,room)
+
+        if (!user) {
+          if (callback && typeof callback === 'function') {
+            callback({
+              status: 0,
+              message: 'No user selected'
+            })
+          }
+
+          return
+        }
+        await RoomsModal.findOneAndUpdate({ _id: mongoose.Types.ObjectId(room) }, { $pull: { users: { usercode: user } } })
+
+        await UserModel.updateMany(
+          { usercode: user },
+          {
+            $pull: {
+              rooms: { _id: mongoose.Types.ObjectId(room) }
+            }
+          }
+        )
+
+        socket.to(room).emit('user_left', {
+          user,
+          room
+        })
+
+        callback({
+          status: 1,
+          message: 'user removed successfully '
+        })
+
+      } catch (e) {
+        console.log(e)
+        if (callback && typeof callback === 'function') {
+          callback({
+            status: 0,
+            message: e.message
+          })
+        }
+      }
     })
 
     socket.on('disconnect', () => {
@@ -258,5 +383,6 @@ try {
     console.log(err.context) // some additional error context
   })
 } catch (e) {
+  console.log('error')
   app.response.send(e.message)
 }

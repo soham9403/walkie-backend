@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import userRole from '../config/constants/userRole.js';
-import { ErrorResponse, forbiddenResponse } from '../helper/apiResponse.js';
+import { errorResponse, forbiddenResponse } from '../helper/apiResponse.js';
 // export const onlySuperAdminUser = (req, res, next) => {
 //     const Bearer = req.header('Authorization');
 //     const token = Bearer.replace("Bearer ", "")

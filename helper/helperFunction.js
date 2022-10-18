@@ -18,7 +18,7 @@ export const compareDate = (date1, date2 = new Date(), milisecondDiffrenece = 0)
     const Date1 = new Date(date1).getTime()
     const Date2 = new Date(date2).getTime()
 
-   
+
     if (Date1 + milisecondDiffrenece >= Date2) {
         return 1
     } else {
@@ -33,5 +33,17 @@ export const generateOTP = () => {
 
 export const getRndInteger = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min
-  }
-  
+}
+
+export const isUserInRoom = (req) => {
+    let inRoom = false
+
+    const list = req.requested_room.users
+
+    const user = req.user_info
+    for (let item of list) {
+        if (item.usercode == user.usercode) { inRoom = true; break; }
+    }
+
+    return inRoom
+}

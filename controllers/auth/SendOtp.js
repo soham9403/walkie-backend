@@ -59,7 +59,7 @@ const SendOtp = [
                     )
                   })
                   .catch(e => {
-                    return apiResponse.ErrorResponse(
+                    return apiResponse.errorResponse(
                       res,
                       'mail cant be sent to 1 ' + e.message + user.email
                     )
@@ -79,7 +79,7 @@ const SendOtp = [
                   user_id: user._id,
                   otp: otp
                 }).catch(() => {
-                  return apiResponse.ErrorResponse(
+                  return apiResponse.errorResponse(
                     res,
                     'mail cant be sent to 2' + user.email
                   )

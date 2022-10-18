@@ -17,7 +17,7 @@ export const successResponseWithData = (res, msg, data) => {
     return res.status(200).json(resData);
 };
 
-export const ErrorResponse = (res, msg) => {
+export const errorResponse = (res, msg) => {
     var data = {
         status: 0,
         code:500,

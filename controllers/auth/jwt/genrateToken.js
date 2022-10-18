@@ -2,6 +2,10 @@ import jwt from 'jsonwebtoken'
 const genrateToken = (data) => {
     if(data.password){
         delete data['password']
+        
+    }
+    if(data.rooms){
+        delete data['rooms']
     }
     const accessToken = jwt.sign(
         {

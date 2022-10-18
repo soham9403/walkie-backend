@@ -91,7 +91,7 @@ const changePassword = [
           )
         })
     } catch (e) {
-      return apiResponse.ErrorResponse(res, e.message)
+      return apiResponse.errorResponse(res, e.message)
     }
   }
 ]
