@@ -250,7 +250,11 @@ try {
 
         const { users, room } = JSON.parse(data)
 
-
+        console.log('--------adde user socket called--------------')
+        console.log('users',users)
+        console.log('room',room)
+        console.log('----------------------')
+        
         if (users.length < 0) {
           if (callback && typeof callback === 'function') {
             callback({
@@ -327,7 +331,11 @@ try {
 
 
         const { user, room } = JSON.parse(data)
-console.log(user,room)
+
+        console.log('--------remove user socket called--------------')
+        console.log('user',user)
+        console.log('room',room)
+        console.log('----------------------')
 
         if (!user) {
           if (callback && typeof callback === 'function') {
