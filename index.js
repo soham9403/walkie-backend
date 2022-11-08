@@ -10,7 +10,7 @@ import cors from 'cors'
 import indexroute from './routes/index.js'
 import RoomsModal from './models/RoomsModal.js'
 import UserModel from './models/UserModel.js'
-import { errorResponse } from './helper/apiResponse.js'
+
 
 dotenv.config()
 const app = express()
@@ -251,10 +251,10 @@ try {
         const { users, room } = JSON.parse(data)
 
         console.log('--------adde user socket called--------------')
-        console.log('users',users)
-        console.log('room',room)
+        console.log('users', users)
+        console.log('room', room)
         console.log('----------------------')
-        
+
         if (users.length < 0) {
           if (callback && typeof callback === 'function') {
             callback({
@@ -271,11 +271,17 @@ try {
           { usercode: { $in: users } },
           { password: 0, rooms: 0 }
         )
+        console.log("fetchedusers", fetchedusers)
 
+        console.log("fetchedusersUpdated",fetchedusers.map((user) => { return { name: user.name, usercoder: user.usercode, _id: user._id } }))
 
-        const roomInfo = await RoomsModal.findOneAndUpdate({ _id: mongoose.Types.ObjectId(room) }, { $push: { users: fetchedusers.map((user) => { return { name: user.name, usercoder: user.usercode, _id: user._id } }) } })
+        const roomInfo = await RoomsModal.findOneAndUpdate({ _id: mongoose.Types.ObjectId(room) }, {
+          $push: {
+            users: fetchedusers.map((user) => { return { name: user.name, usercode: user.usercode, _id: user._id } })
+          }
+        })
 
-
+        console.log("roomInfo", roomInfo)
 
         await UserModel.updateMany(
           { usercode: { $in: users } },
@@ -333,8 +339,8 @@ try {
         const { user, room } = JSON.parse(data)
 
         console.log('--------remove user socket called--------------')
-        console.log('user',user)
-        console.log('room',room)
+        console.log('user', user)
+        console.log('room', room)
         console.log('----------------------')
 
         if (!user) {
