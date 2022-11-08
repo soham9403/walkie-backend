@@ -271,9 +271,7 @@ try {
           { usercode: { $in: users } },
           { password: 0, rooms: 0 }
         )
-        console.log("fetchedusers", fetchedusers)
-
-        console.log("fetchedusersUpdated",fetchedusers.map((user) => { return { name: user.name, usercoder: user.usercode, _id: user._id } }))
+        
 
         const roomInfo = await RoomsModal.findOneAndUpdate({ _id: mongoose.Types.ObjectId(room) }, {
           $push: {
@@ -281,7 +279,7 @@ try {
           }
         })
 
-        console.log("roomInfo", roomInfo)
+        
 
         await UserModel.updateMany(
           { usercode: { $in: users } },
