@@ -47,8 +47,8 @@ const UserCreateController = [
     .notEmpty({ ignore_whitespace: true })
     .withMessage('phone_required')
     .bail()
-    .isLength({ max: 10, min: 10 })
-    .withMessage('phone_invalid')
+    // .isLength({ max: 10, min: 10 })
+    // .withMessage('phone_invalid')
     .trim()
     .escape(),
   body('password')
